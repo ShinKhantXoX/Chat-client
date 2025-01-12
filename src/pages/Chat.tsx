@@ -2,14 +2,20 @@ import { io } from 'socket.io-client';
 import { useState, useEffect } from 'react';
 
 const ChatApp = () => {
-  const userId = "1"; // Replace with the actual user ID after authentication
+  const [userId, setUserId] = useState<string | null>(); // Replace with the actual user ID after authentication
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState<any[]>([]);
 
   // Create a socket connection and send the user ID as a query parameter
-  const socket = io("http://localhost:3500/chat", {
-    query: { userId: '1' }
+  // const socket = io("http://localhost:3500/chat", {
+  //   query: { userId: localStorage.getItem('userId') ? localStorage.getItem('userId') : null },
+  //   // transports: ["websocket"]
+  // });
+
+  const socket = io("http://localhost:3500", {
+    query: { userId: "1" },
   });
+  
 
   useEffect(() => {
     // Listen for the 'user-joined' event from the server
@@ -31,6 +37,11 @@ const ChatApp = () => {
       socket.off('user-joined');
     };
   }, []);
+
+  useEffect(() => {
+    // Set the user ID after authentication
+    setUserId(localStorage.getItem('userId'));
+  }, [])
 
   const sendMessage = () => {
     if (message.trim()) {
